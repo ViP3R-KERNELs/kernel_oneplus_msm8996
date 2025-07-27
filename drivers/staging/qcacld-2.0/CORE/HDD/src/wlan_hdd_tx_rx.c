@@ -536,11 +536,11 @@ int __hdd_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
                hddLog(LOG1, "Invalid station id, transmit operation suspended");
                goto drop_pkt;
            }
-
-           vdev_temp = tlshim_peer_validity(hddCtxt->pvosContext, STAId);
+           vdev_temp = tlshim_peer_validity(
+                   (WLAN_HDD_GET_CTX(pAdapter))->pvosContext, STAId);
        } else {
            vdev_temp =
-               tlshim_selfpeer_vdev(hddCtxt->pvosContext);
+               tlshim_selfpeer_vdev((WLAN_HDD_GET_CTX(pAdapter))->pvosContext);
        }
        if (!vdev_temp)
            goto drop_pkt;

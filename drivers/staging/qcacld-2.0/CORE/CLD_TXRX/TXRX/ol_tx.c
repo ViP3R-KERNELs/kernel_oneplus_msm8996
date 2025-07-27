@@ -1204,6 +1204,8 @@ static A_STATUS ol_build_ieee80211_header(adf_nbuf_t msdu)
 	return A_OK;
 }
 
+#define MAX_RADIOTAP_LEN 256
+
 static inline adf_nbuf_t
 ol_tx_hl_base(
     ol_txrx_vdev_handle vdev,
@@ -1231,6 +1233,7 @@ ol_tx_hl_base(
      */
     while (msdu) {
         adf_nbuf_t next;
+        adf_nbuf_t prev_drop;
         struct ol_tx_frms_queue_t *txq;
         struct ol_tx_desc_t *tx_desc = NULL;
 
@@ -1254,7 +1257,12 @@ ol_tx_hl_base(
                 TXRX_PRINT(TXRX_PRINT_LEVEL_ERR,
                            "radiotap length exceeds %d, drop it!\n",
                            MAX_RADIOTAP_LEN);
-                ol_tx_drop_list_add(&msdu_drop_list, msdu, &drop_tail);
+                adf_nbuf_set_next(msdu, NULL);
+                if (!msdu_drop_list)
+                    msdu_drop_list = msdu;
+                else
+                    adf_nbuf_set_next(prev_drop, msdu);
+                prev_drop = msdu;
                 msdu = next;
                 continue;
             }
@@ -1283,7 +1291,7 @@ ol_tx_hl_base(
             if (!msdu_drop_list)
                 msdu_drop_list = msdu;
             else
-                adf_nbuf_set_next(drop_tail, msdu);
+                adf_nbuf_set_next(prev_drop, msdu);
             return msdu_drop_list; /* the list of unaccepted MSDUs */
         }
 
@@ -1443,8 +1451,8 @@ ol_tx_hl_base(
         if (VOS_MONITOR_MODE == vos_get_conparam()) {
             adf_nbuf_frag_push_head(
                     msdu,
-                    tx_desc->rtap_len,
-                    (uint8_t *)tx_desc->rtap, /* virtual addr */
+                    rtap_len,
+                    (uint8_t *)rtap, /* virtual addr */
                     0, 0 /* phys addr MSBs - n/a */);
                     adf_nbuf_set_frag_is_wordstream(msdu, 1, 1);
         }
@@ -1469,6 +1477,7 @@ free_tx_desc:
 
     return msdu_drop_list; /* all MSDUs were accepted */
 }
+
 
 /**
  * ol_txrx_get_vdev_from_vdev_id() - get vdev from vdev_id
