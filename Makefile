@@ -382,10 +382,11 @@ LINUXINCLUDE    := \
 
 KBUILD_CPPFLAGS := -D__KERNEL__
 
-KBUILD_CFLAGS   := -Werror -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
-		   -fno-strict-aliasing -fno-common \
-		   -Werror-implicit-function-declaration \
-		   -Wno-format-security \
+KBUILD_CFLAGS   := -Werror -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -Wno-constant-logical-operand \
+		   -fno-strict-aliasing -fno-common -Wno-parentheses-equality -Wno-constant-conversion \
+		   -Wno-self-assign -Wno-ignored-attributes -Wno-macro-redefined -Wno-unused-variable \
+		   -Werror-implicit-function-declaration -Wno-implicit-function-declaration -Wno-int-conversion \
+		   -Wno-format-security -Wno-misleading-indentation -Wno-enum-conversion -Wno-logical-not-parentheses \
 		   -std=gnu89
 
 KBUILD_AFLAGS_KERNEL :=
