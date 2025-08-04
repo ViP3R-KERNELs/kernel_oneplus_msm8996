@@ -66,6 +66,15 @@ include/config
 include/generated
 arch/*/include/generated
 
+drivers/staging/rtl8812au
+drivers/staging/rtl88x2bu
+drivers/staging/rtl8188eus
+drivers/staging/rtl8192eu
+drivers/staging/rtl8188fu
+anykernel
+Kernel-Module
+kali-nethunter-kernel
+
 # stgit generated dirs
 patches-*
 
